@@ -1,4 +1,0 @@
-﻿  main.cpp
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-Gtest (server)\Chat TCP-MYSQL-Gtest (server)\main.cpp(68,15): error C2440: =: невозможно преобразовать "std::_Binder<std::_Unforced,SOCKET &,sockaddr *,size_t>" в "unsigned __int64"
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-Gtest (server)\Chat TCP-MYSQL-Gtest (server)\main.cpp(68,15): message : Для выполнения данного преобразования нет доступного оператора преобразования, определенного пользователем, или вызов оператора невозможен
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-Gtest (server)\Chat TCP-MYSQL-Gtest (server)\main.cpp(167,24): warning C4018: <: несоответствие типов со знаком и без знака
