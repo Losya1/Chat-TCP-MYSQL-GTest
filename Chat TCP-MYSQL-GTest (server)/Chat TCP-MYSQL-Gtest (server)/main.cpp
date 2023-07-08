@@ -9,10 +9,12 @@
 #include <jdbc/cppconn/exception.h>
 #include <jdbc/cppconn/resultset.h>
 #include <jdbc/cppconn/statement.h>
+#include <jdbc/cppconn/prepared_statement.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 
 int main() {
+
 
 	//SOCKET//
 
@@ -131,20 +133,9 @@ int main() {
 
 	pstmt = con->prepareStatement("INSERT INTO user(username, password) VALUES(?,?)");
 
+	//MAIN//
 
-	delete pstmt;
-	delete con;
-	closesocket(ServSock);
-	closesocket(ClientConn);
-	WSACleanup();
-	return 0;
-}
-	mysql_set_character_set(&mysql, "utf8");
-	std::cout << "connection characterset: " << mysql_character_set_name(&mysql) << std::endl;
-
-
-	std::vector <char> Client_message(BUFF_SIZE);
-	short smes = 0;
+	std::vector <char> Client_message(BUFF_SIZE), Server_message(BUFF_SIZE);
 	std::string x, y;
 	std::cout << "Waiting for the message" << std::endl;
 	while (true) {
@@ -154,13 +145,28 @@ int main() {
 			Client_message.erase(Client_message.begin());
 			std::cout << Client_message.data() << std::endl;
 			x = Client_message.data();
-			mysql_query(&mysql, "INSERT INTO user(id, name) values(default, x)");
+			pstmt->setString(1, x);
+
+			Server_message.push_back('ok');
+			send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+			Server_message.clear();
+
+			recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+			x = Client_message.data();
+			pstmt->setString(2, x);
+			pstmt->execute();
+
+			Server_message.push_back('cm');
+
+			Server_message.push_back('er');
+
+			std::cout << "One row inserted." << std::endl;
 		}
 
 		if (Client_message[0] == '2') {
 			Client_message.erase(Client_message.begin());
 
-			smes = send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+			send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
 
 			if (smes == SOCKET_ERROR) {
 				std::cout << "Can't send message to Client. Error # " << WSAGetLastError() << std::endl;
@@ -185,15 +191,14 @@ int main() {
 		if (Client_message[0] == '4') {
 			Client_message.erase(Client_message.begin());
 			std::cout << Client_message.data() << std::endl;
-			smes = send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
-
-			if (smes == SOCKET_ERROR) {
-				std::cout << "Can't send message to Client. Error # " << WSAGetLastError() << std::endl;
-			}
+			send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
 		}
 	}
 
-	mysql_close(&mysql);
-
+	delete pstmt;
+	delete con;
+	closesocket(ServSock);
+	closesocket(ClientConn);
+	WSACleanup();
 	return 0;
 }
