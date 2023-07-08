@@ -3,16 +3,15 @@
 void User::registration(SOCKET ClientConn) {
 	Client_message.erase(Client_message.begin());
 	std::cout << Client_message.data() << std::endl;
-
-	res = stmt->executeQuery("SELECT username FROM user");
+	Server_message.clear();
+	res = stmt->executeQuery("SELECT username FROM user ORDER");
 	while (res->next()) {
-		Server_message.clear();
-		Server_message.push_back('107');
-
 		if (Client_message.data() == res->getString("username")) {
 			return;
 		}
 	}
+
+	Server_message.push_back('107');
 	pstmt->setString(1, Client_message.data());
 
 	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);

@@ -17,15 +17,15 @@
 const char IP_SERV[] = "127.0.0.1";
 const int PORT_NUM = 7777;
 const short BUFF_SIZE = 256;
-int erStat;
+__declspec(selectany) int erStat;
 
-sql::Driver* driver;
-sql::Connection* con;
-sql::Statement* stmt;
-sql::PreparedStatement* pstmt;
-sql::ResultSet* res;
+__declspec(selectany) sql::Driver* driver;
+__declspec(selectany) sql::Connection* con;
+__declspec(selectany) sql::Statement* stmt;
+__declspec(selectany) sql::PreparedStatement* pstmt;
+__declspec(selectany) sql::ResultSet* res;
 
-std::vector <char> Client_message(BUFF_SIZE), Server_message(BUFF_SIZE);
+__declspec(selectany) std::vector <char> Client_message(BUFF_SIZE), Server_message(BUFF_SIZE);
 
 class User {
 public:
