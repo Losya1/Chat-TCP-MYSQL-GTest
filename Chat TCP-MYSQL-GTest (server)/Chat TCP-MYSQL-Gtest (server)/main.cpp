@@ -1,27 +1,8 @@
-#include <iostream>
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#include <vector>
-
-#include "jdbc/mysql_connection.h"
-
-#include <jdbc/cppconn/driver.h>
-#include <jdbc/cppconn/exception.h>
-#include <jdbc/cppconn/resultset.h>
-#include <jdbc/cppconn/statement.h>
-#include <jdbc/cppconn/prepared_statement.h>
-
-#pragma comment(lib, "Ws2_32.lib")
+#include "header.h"
 
 int main() {
 
-
 	//SOCKET//
-
-	const char IP_SERV[] = "127.0.0.1";
-	const int PORT_NUM = 7777;
-	const short BUFF_SIZE = 256;
-	int erStat;
 
 	in_addr ip_to_num;
 	erStat = inet_pton(AF_INET, IP_SERV, &ip_to_num);
@@ -110,12 +91,7 @@ int main() {
 		std::cout << "Client connected with IP address " << clientIP << std::endl;
 	}
 
-
 	//MYSQL//
-
-	sql::Driver* driver;
-	sql::Connection* con;
-	sql::PreparedStatement* pstmt;
 
 	try
 	{
@@ -131,72 +107,27 @@ int main() {
 
 	con->setSchema("ChatDB");
 
+	stmt = con->createStatement();
+
 	pstmt = con->prepareStatement("INSERT INTO user(username, password) VALUES(?,?)");
 
 	//MAIN//
 
-	std::vector <char> Client_message(BUFF_SIZE), Server_message(BUFF_SIZE);
-	std::string x, y;
+	User user;
 	std::cout << "Waiting for the message" << std::endl;
 	while (true) {
+		Client_message.clear();
 		recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
 
 		if (Client_message[0] == '1') {
-			Client_message.erase(Client_message.begin());
-			std::cout << Client_message.data() << std::endl;
-			x = Client_message.data();
-			pstmt->setString(1, x);
-
-			Server_message.push_back('ok');
-			send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
-			Server_message.clear();
-
-			recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
-			x = Client_message.data();
-			pstmt->setString(2, x);
-			pstmt->execute();
-
-			Server_message.push_back('cm');
-
-			Server_message.push_back('er');
-
-			std::cout << "One row inserted." << std::endl;
-		}
-
-		if (Client_message[0] == '2') {
-			Client_message.erase(Client_message.begin());
-
-			send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
-
-			if (smes == SOCKET_ERROR) {
-				std::cout << "Can't send message to Client. Error # " << WSAGetLastError() << std::endl;
-			}
-
-			std::cout << Client_message.data() << std::endl;
-			y = Client_message.data();
-			mysql_query(&mysql, "INSERT INTO user(id, name) values(default, y)");
-
-			mysql_query(&mysql, "SELECT * FROM user");
-
-			if (res = mysql_store_result(&mysql)) {
-				while (row = mysql_fetch_row(res)) {
-					for (int i = 0; i < mysql_num_fields(res); i++) {
-						std::cout << row[i] << "  ";
-					}
-					std::cout << std::endl;
-				}
-			}
-		}
-
-		if (Client_message[0] == '4') {
-			Client_message.erase(Client_message.begin());
-			std::cout << Client_message.data() << std::endl;
-			send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+			user.registration(ClientConn);
 		}
 	}
 
+	delete stmt;
 	delete pstmt;
 	delete con;
+	delete res;
 	closesocket(ServSock);
 	closesocket(ClientConn);
 	WSACleanup();

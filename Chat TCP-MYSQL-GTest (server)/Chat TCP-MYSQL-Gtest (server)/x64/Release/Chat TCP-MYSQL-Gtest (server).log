@@ -1,4 +1,17 @@
-﻿  main.cpp
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-Gtest (server)\Chat TCP-MYSQL-Gtest (server)\main.cpp(68,15): error C2440: =: невозможно преобразовать "std::_Binder<std::_Unforced,SOCKET &,sockaddr *,size_t>" в "unsigned __int64"
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-Gtest (server)\Chat TCP-MYSQL-Gtest (server)\main.cpp(68,15): message : Для выполнения данного преобразования нет доступного оператора преобразования, определенного пользователем, или вызов оператора невозможен
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-Gtest (server)\Chat TCP-MYSQL-Gtest (server)\main.cpp(167,24): warning C4018: <: несоответствие типов со знаком и без знака
+﻿  functions.cpp
+C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\Chat TCP-MYSQL-Gtest (server)\functions.cpp(10,28): warning C4305: аргумент: усечение из "int" в "_Ty"
+          with
+          [
+              _Ty=char
+          ]
+C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\Chat TCP-MYSQL-Gtest (server)\functions.cpp(10,28): warning C4309: аргумент: усечение константного значения
+  main.cpp
+main.obj : error LNK2005: "int erStat" (?erStat@@3HA) уже определен в functions.obj
+main.obj : error LNK2005: "class sql::ResultSet * res" (?res@@3PEAVResultSet@sql@@EA) уже определен в functions.obj
+main.obj : error LNK2005: "class sql::PreparedStatement * pstmt" (?pstmt@@3PEAVPreparedStatement@sql@@EA) уже определен в functions.obj
+main.obj : error LNK2005: "class sql::Statement * stmt" (?stmt@@3PEAVStatement@sql@@EA) уже определен в functions.obj
+main.obj : error LNK2005: "class std::vector<char,class std::allocator<char> > Client_message" (?Client_message@@3V?$vector@DV?$allocator@D@std@@@std@@A) уже определен в functions.obj
+main.obj : error LNK2005: "class std::vector<char,class std::allocator<char> > Server_message" (?Server_message@@3V?$vector@DV?$allocator@D@std@@@std@@A) уже определен в functions.obj
+main.obj : error LNK2005: "class sql::Connection * con" (?con@@3PEAVConnection@sql@@EA) уже определен в functions.obj
+main.obj : error LNK2005: "class sql::Driver * driver" (?driver@@3PEAVDriver@sql@@EA) уже определен в functions.obj
+C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\x64\Release\Chat TCP-MYSQL-Gtest (server).exe : fatal error LNK1169: обнаружен многократно определенный символ - один или более
