@@ -4,49 +4,30 @@ using namespace std;
 
 void User::registration(SOCKET ClientSock) {
 	vector <char> Username(BUFF_SIZE), Password(BUFF_SIZE), Server_message(BUFF_SIZE);
-	short x = 0, y = 0;
-	string a, b, c;
 	cout << "Enter username" << endl;
 	cin >> Username.data();
 	Username.insert(Username.begin(), '1');
-	x = send(ClientSock, Username.data(), BUFF_SIZE, 0);
+	send(ClientSock, Username.data(), BUFF_SIZE, 0);
 
-	if (x == SOCKET_ERROR) {
-		cout << "Can't send message to Server. Error # " << WSAGetLastError() << endl;
+	recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+	if (Server_message[0] == 'r') {
+		std::cout << "Error #1" << std::endl;
+		Server_message[0] = 'r';
+		send(ClientSock, Server_message.data(), BUFF_SIZE, 0);
 		return;
 	}
 
 	cout << "Enter password" << endl;
 	cin >> Password.data();
-	Password.insert(Password.begin(), '2');
-	y = send(ClientSock, Password.data(), BUFF_SIZE, 0);
-
-	if (y == SOCKET_ERROR) {
-		cout << "Can't send message to Server. Error # " << WSAGetLastError() << endl;
-		return;
-	}
+	send(ClientSock, Password.data(), BUFF_SIZE, 0);
 
 	recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-
-	Username.erase(Username.begin());
-	Password.erase(Password.begin());
-	a = Server_message.data();
-	b = Username.data();
-	c = Password.data();
-
-	if (a == c) {
-		pair<string, string> p1 = make_pair(b, c);
-		for (auto& p : user_arr) {
-			if (p1.first == p.first) {
-				cout << "error" << endl;
-				return;
-			}
-		}
-		user_arr.emplace_back(p1);
-		cout << "Registration complete" << endl;
+	if (Server_message[0] == 'k') {
+		std::cout << "Registration complete" << std::endl;
 	}
 	else {
-		cout << "Error" << endl;
+		std::cout << "Error #2" << std::endl;
+		return;
 	}
 }
 
@@ -61,7 +42,7 @@ string User::login() {
 			return p.first;
 		}
 	}
-	cout << "Error" << endl;
+	cout << "Error #3" << endl;
 	return "Error";
 }
 
