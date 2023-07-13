@@ -1,17 +1,7 @@
 ﻿  functions.cpp
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\Chat TCP-MYSQL-Gtest (server)\functions.cpp(10,28): warning C4305: аргумент: усечение из "int" в "_Ty"
-          with
-          [
-              _Ty=char
-          ]
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\Chat TCP-MYSQL-Gtest (server)\functions.cpp(10,28): warning C4309: аргумент: усечение константного значения
-  main.cpp
-main.obj : error LNK2005: "int erStat" (?erStat@@3HA) уже определен в functions.obj
-main.obj : error LNK2005: "class sql::ResultSet * res" (?res@@3PEAVResultSet@sql@@EA) уже определен в functions.obj
-main.obj : error LNK2005: "class sql::PreparedStatement * pstmt" (?pstmt@@3PEAVPreparedStatement@sql@@EA) уже определен в functions.obj
-main.obj : error LNK2005: "class sql::Statement * stmt" (?stmt@@3PEAVStatement@sql@@EA) уже определен в functions.obj
-main.obj : error LNK2005: "class std::vector<char,class std::allocator<char> > Client_message" (?Client_message@@3V?$vector@DV?$allocator@D@std@@@std@@A) уже определен в functions.obj
-main.obj : error LNK2005: "class std::vector<char,class std::allocator<char> > Server_message" (?Server_message@@3V?$vector@DV?$allocator@D@std@@@std@@A) уже определен в functions.obj
-main.obj : error LNK2005: "class sql::Connection * con" (?con@@3PEAVConnection@sql@@EA) уже определен в functions.obj
-main.obj : error LNK2005: "class sql::Driver * driver" (?driver@@3PEAVDriver@sql@@EA) уже определен в functions.obj
-C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\x64\Release\Chat TCP-MYSQL-Gtest (server).exe : fatal error LNK1169: обнаружен многократно определенный символ - один или более
+  Создание кода
+  40 of 545 functions ( 7.3%) were compiled, the rest were copied from previous compilation.
+    3 functions were new in current compilation
+    5 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  Chat TCP-MYSQL-Gtest (server).vcxproj -> C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (server)\x64\Release\Chat TCP-MYSQL-Gtest (server).exe

@@ -1,8 +1,10 @@
 #include "header.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+	::testing::InitGoogleTest(&argc, argv);
+	RUN_ALL_TESTS();
 
-	//SOCKET//
+	//SOCKET
 
 	in_addr ip_to_num;
 	erStat = inet_pton(AF_INET, IP_SERV, &ip_to_num);
@@ -91,7 +93,7 @@ int main() {
 		std::cout << "Client connected with IP address " << clientIP << std::endl;
 	}
 
-	//MYSQL//
+	//MYSQL
 
 	try
 	{
@@ -101,8 +103,7 @@ int main() {
 	catch (sql::SQLException e)
 	{
 		std::cout << "Could not connect to server. Error message: " << e.what() << std::endl;
-		system("pause");
-		exit(1);
+		return 1;
 	}
 
 	con->setSchema("ChatDB");
@@ -111,18 +112,11 @@ int main() {
 
 	pstmt = con->prepareStatement("INSERT INTO user(username, password) VALUES(?,?)");
 
-	//MAIN//
+	//MAIN
 
-	User user;
-	std::cout << "Waiting for the message" << std::endl;
-	while (true) {
-		Client_message.clear();
-		recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+	Server_functions sf;
 
-		if (Client_message[0] == '1') {
-			user.registration(ClientConn);
-		}
-	}
+	sf.message_distributor(ClientConn);
 
 	delete stmt;
 	delete pstmt;
