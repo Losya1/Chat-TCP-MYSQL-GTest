@@ -10,12 +10,12 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "jdbc/mysql_connection.h"
-#include <jdbc/cppconn/driver.h>
-#include <jdbc/cppconn/exception.h>
-#include <jdbc/cppconn/resultset.h>
-#include <jdbc/cppconn/statement.h>
-#include <jdbc/cppconn/prepared_statement.h>
+#include "C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc/mysql_connection.h"
+#include <C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc/cppconn/driver.h>
+#include <C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc/cppconn/exception.h>
+#include <C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc/cppconn/resultset.h>
+#include <C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc/cppconn/statement.h>
+#include <C:\Program Files\MySQL\Connector C++ 8.0\include\jdbc/cppconn/prepared_statement.h>
 
 const char IP_SERV[] = "127.0.0.1";
 const int PORT_NUM = 7777;
@@ -31,5 +31,6 @@ __declspec(selectany) sql::ResultSet* res;
 class Server_functions {
 public:
 	void message_distributor(SOCKET ClientConn);
-	void registration(SOCKET ClientSock);
+	void registration(SOCKET ClientConn);
+	void login(SOCKET ClientConn);
 };

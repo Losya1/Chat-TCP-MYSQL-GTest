@@ -11,6 +11,10 @@ void Server_functions::message_distributor(SOCKET ClientConn) {
 		if (Client_message[0] == '1') {
 			registration(ClientConn);
 		}
+		if (Client_message[0] == '2') {
+			login(ClientConn);
+		}
+		else return;
 	}
 }
 
@@ -38,6 +42,24 @@ void Server_functions::registration(SOCKET ClientConn) {
 	Server_message[0] = 'k';
 	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
 	std::cout << "One row inserted." << std::endl;
+}
+
+void Server_functions::login(SOCKET ClientConn) {
+	Client_message.erase(Client_message.begin());
+	std::string mes;
+	for (int i = 0; i < Client_message.size(); i++) {
+		if (Client_message[i] == ' ') {
+			Server_message[0] = 'r';
+			send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		}
+		mes += Client_message[i];
+	}
+	try {
+		res = stmt->executeQuery("SELECT password FROM user WHERE username = '" + mes + "'");
+	}
+	catch (sql::SQLException e) {
+		std::cout << "There is no such user" << std::endl;
+	}
 }
 
 TEST(GTest, test1) {
