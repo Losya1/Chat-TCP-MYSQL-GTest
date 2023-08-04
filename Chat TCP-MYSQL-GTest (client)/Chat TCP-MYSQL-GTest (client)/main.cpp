@@ -1,7 +1,5 @@
 #include "header.h"
 
-using namespace std;
-
 int main() {
 	int erStat;		// For checking errors in sockets functions
 
@@ -14,24 +12,24 @@ int main() {
 	erStat = WSAStartup(MAKEWORD(2, 2), &wsData);
 
 	if (erStat != 0) {
-		cout << "Error WinSock version initializaion #";
-		cout << WSAGetLastError();
+		std::cout << "Error WinSock version initializaion #";
+		std::cout << WSAGetLastError();
 		return 1;
 	}
 	else {
-		cout << "WinSock initialization is OK" << endl;
+		std::cout << "WinSock initialization is OK" << std::endl;
 	}
 
 	// Socket initialization
 	SOCKET ClientSock = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (ClientSock == INVALID_SOCKET) {
-		cout << "Error initialization socket # " << WSAGetLastError() << endl;
+		std::cout << "Error initialization socket # " << WSAGetLastError() << std::endl;
 		closesocket(ClientSock);
 		WSACleanup();
 	}
 	else {
-		cout << "Client socket initialization is OK" << endl;
+		std::cout << "Client socket initialization is OK" << std::endl;
 	}
 
 	// Establishing a connection to Server
@@ -46,13 +44,13 @@ int main() {
 	erStat = connect(ClientSock, (sockaddr*)&servInfo, sizeof(servInfo));
 
 	if (erStat != 0) {
-		cout << "Connection to Server is FAILED. Error # " << WSAGetLastError() << endl;
+		std::cout << "Connection to Server is FAILED. Error # " << WSAGetLastError() << std::endl;
 		closesocket(ClientSock);
 		WSACleanup();
 		return 1;
 	}
 	else {
-		cout << "Connection established SUCCESSFULLY. Ready to send a message to Server" << endl;
+		std::cout << "Connection established SUCCESSFULLY. Ready to send a message to Server" << std::endl;
 	}
 
 	User chat;
@@ -60,20 +58,20 @@ int main() {
 	char x;
 
 	while (b == true) {
-		cout << "Enter 1 to registr, 2 to login or 3 to quit." << endl;
-		cin >> x;
+		std::cout << "Enter 1 to registr, 2 to login or 3 to quit." << std::endl;
+		std::cin >> x;
 		switch (x) {
 		case('1'):
 			chat.registration(ClientSock);
 			break;
 		case('2'):
-			chat.authorized_user(chat.login(), ClientSock);
+			chat.authorized_user(chat.login(ClientSock), ClientSock);
 			break;
 		case('3'):
 			b = false;
 			break;
 		default:
-			cout << "error" << endl;
+			std::cout << "error" << std::endl;
 			break;
 		}
 	}

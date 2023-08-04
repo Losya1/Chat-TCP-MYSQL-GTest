@@ -7,18 +7,16 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-using namespace std;
-
 const char SERVER_IP[] = "127.0.0.1";
 const short SERVER_PORT_NUM = 7777;
 const short BUFF_SIZE = 256;
 
 class User {
 private:
-	vector<pair<string, string>> user_arr = {};
-	vector <string> mes_arr;
+	std::vector<std::pair<std::string, std::string>> user_arr = {};
+	std::vector <std::string> mes_arr;
 public:
 	void registration(SOCKET ClientSock);
-	string login();
-	void authorized_user(const string name, SOCKET ClientSock);
+	std::string login(SOCKET ClientSock);
+	void authorized_user(const std::string name, SOCKET ClientSock);
 };
