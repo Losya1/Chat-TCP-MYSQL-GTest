@@ -1,2 +1,2 @@
-﻿  functions.cpp
-  Chat TCP-MYSQL-GTest (client).vcxproj -> C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (client)\x64\Debug\Chat TCP-MYSQL-GTest (client).exe
+﻿main.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __cdecl User::login(void)" (?login@User@@QEAA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ) в функции main.
+C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (client)\x64\Debug\Chat TCP-MYSQL-GTest (client).exe : fatal error LNK1120: неразрешенных внешних элементов: 1

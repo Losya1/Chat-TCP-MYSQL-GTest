@@ -11,21 +11,28 @@ void User::registration(SOCKET ClientSock) {
 	recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
 	if (Server_message[0] == 'r') {								//r - error
 		std::cout << "This user already exists" << std::endl;
-		Server_message[0] = 'r';
-		send(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+		Client_message[0] = 'r';
+		send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
 		return;
 	}
 
-	std::cout << "Enter password" << std::endl;
-	std::cin >> Password.data();
-	send(ClientSock, Password.data(), BUFF_SIZE, 0);
+	if (Server_message[0] == 'k') {
+		std::cout << "Enter password" << std::endl;
+		std::cin >> Password.data();
+		send(ClientSock, Password.data(), BUFF_SIZE, 0);
 
-	recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-	if (Server_message[0] == 'k') {								//k - ok
-		std::cout << "Registration complete" << std::endl;
+		recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+
+		if (Server_message[0] == 'k') {								//k - ok
+			std::cout << "Registration complete" << std::endl;
+		}
+		else {
+			std::cout << "Registration Error #1" << std::endl;
+			return;
+		}
 	}
 	else {
-		std::cout << "Registration Error #1" << std::endl;
+		std::cout << "Error" << std::endl;
 		return;
 	}
 }
@@ -41,7 +48,7 @@ std::string User::login(SOCKET ClientSock) {
 		std::cout << "There is no such user" << std::endl;
 		Server_message[0] = 'r';
 		send(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-		return;
+		return "Error";
 	}
 
 	std::cout << "Enter password" << std::endl;
@@ -51,10 +58,11 @@ std::string User::login(SOCKET ClientSock) {
 	recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
 	if (Server_message[0] == 'r') {
 		std::cout << "Invalid password" << std::endl;
-		Server_message[0] = 'r';
-		send(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-		return;
+		Client_message[0] = 'r';
+		send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+		return "Error";
 	}
+	return Server_message.data();
 }
 
 void User::authorized_user(const std::string name, SOCKET ClientSock) {

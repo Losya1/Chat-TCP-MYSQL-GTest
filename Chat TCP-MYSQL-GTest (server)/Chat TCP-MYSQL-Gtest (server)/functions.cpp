@@ -6,6 +6,11 @@ void Server_functions::message_distributor(SOCKET ClientConn) {
 	while (true) {
 		std::cout << "Waiting for the message" << std::endl;
 		recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+		
+		if (Client_message[0] == 'r') {
+			Client_message.erase(Client_message.begin());
+		}
+
 		std::cout << Client_message.data() << std::endl;
 
 		if (Client_message[0] == '1') {
@@ -14,7 +19,6 @@ void Server_functions::message_distributor(SOCKET ClientConn) {
 		if (Client_message[0] == '2') {
 			login(ClientConn);
 		}
-		else return;
 	}
 }
 
@@ -48,17 +52,40 @@ void Server_functions::login(SOCKET ClientConn) {
 	Client_message.erase(Client_message.begin());
 	std::string mes;
 	for (int i = 0; i < Client_message.size(); i++) {
-		if (Client_message[i] == ' ') {
-			Server_message[0] = 'r';
-			send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
-		}
+		if (Client_message[i] == ' ') break;
 		mes += Client_message[i];
 	}
 	try {
 		res = stmt->executeQuery("SELECT password FROM user WHERE username = '" + mes + "'");
 	}
 	catch (sql::SQLException e) {
-		std::cout << "There is no such user" << std::endl;
+		std::cout << e.what() << std::endl;
+		Server_message[0] = 'r';
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		return;
+	}
+	Server_message[0] = 'k';
+	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+
+	recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+	if (Client_message[0] == 'r') return;
+
+	try {
+		res = stmt->executeQuery("SELECT password FROM user WHERE username = '" + mes + "'");
+		while (res->next()) {
+			std::string x = res->getString("password");
+			if (Client_message.data() == x) {
+				Server_message[0] = 'k';
+				send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+				return;
+			}
+		}
+	}
+	catch (sql::SQLException e) {
+		std::cout << e.what() << std::endl;
+		Server_message[0] = 'r';
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		return;
 	}
 }
 

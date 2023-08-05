@@ -1,6 +1,1 @@
-﻿  functions.cpp
-D:\source\Chat TCP-MYSQL-GTest (client)\Chat TCP-MYSQL-GTest (client)\functions.cpp(44,3): error C2561: User::login: функция должна возвращать значение
-D:\source\Chat TCP-MYSQL-GTest (client)\Chat TCP-MYSQL-GTest (client)\functions.cpp(33,19): message : см. объявление "User::login"
-D:\source\Chat TCP-MYSQL-GTest (client)\Chat TCP-MYSQL-GTest (client)\functions.cpp(56,3): error C2561: User::login: функция должна возвращать значение
-D:\source\Chat TCP-MYSQL-GTest (client)\Chat TCP-MYSQL-GTest (client)\functions.cpp(33,19): message : см. объявление "User::login"
-  main.cpp
+﻿  Chat TCP-MYSQL-GTest (client).vcxproj -> C:\Users\Administrator\source\repos\Chat TCP-MYSQL-GTest (client)\x64\Release\Chat TCP-MYSQL-GTest (client).exe
