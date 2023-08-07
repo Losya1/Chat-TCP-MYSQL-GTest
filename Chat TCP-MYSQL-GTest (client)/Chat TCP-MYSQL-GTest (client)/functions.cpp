@@ -51,18 +51,31 @@ std::string User::login(SOCKET ClientSock) {
 		return "Error";
 	}
 
-	std::cout << "Enter password" << std::endl;
-	std::cin >> Password.data();
-	send(ClientSock, Password.data(), BUFF_SIZE, 0);
+	if (Server_message[0] == 'k') {
+		std::cout << "Enter password" << std::endl;
+		std::cin >> Password.data();
+		send(ClientSock, Password.data(), BUFF_SIZE, 0);
 
-	recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-	if (Server_message[0] == 'r') {
-		std::cout << "Invalid password" << std::endl;
-		Client_message[0] = 'r';
-		send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+		recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+		if (Server_message[0] == 'r') {
+			std::cout << "Invalid password" << std::endl;
+			Client_message[0] = 'r';
+			send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+			return "Error";
+		}
+		if (Server_message[0] == 'k') {
+			Username.erase(Username.begin());
+			return Username.data();
+		}
+		else {
+			std::cout << "Error" << std::endl;
+			return "Error";
+		}
+	}
+	else {
+		std::cout << "Error" << std::endl;
 		return "Error";
 	}
-	return Server_message.data();
 }
 
 void User::authorized_user(const std::string name, SOCKET ClientSock) {
@@ -82,14 +95,9 @@ void User::authorized_user(const std::string name, SOCKET ClientSock) {
 			while (1) {
 				std::cout << "Write message" << std::endl;
 				std::cin >> Client_message.data();
-				Client_message.insert(Client_message.begin(), '4');
+				Client_message.insert(Client_message.begin(), '3');
 
-				cmes = send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
-
-				if (cmes == SOCKET_ERROR) {
-					std::cout << "Can't send message to Server. Error # " << WSAGetLastError() << std::endl;
-					break;
-				}
+				send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
 
 				recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
 
@@ -97,16 +105,27 @@ void User::authorized_user(const std::string name, SOCKET ClientSock) {
 				break;
 		case('2'):
 			std::cout << "Write the name of the person to send the message to." << std::endl;
-			std::cin >> write_name;
-			for (auto& p : user_arr) {
-				if (write_name == p.first) {
-					std::cout << "correct" << std::endl << "Write yout message" << std::endl;
-					std::cin >> message;
-					std::string send_mes = name + " -> " + write_name + ": " + message;
-					mes_arr.emplace_back(send_mes);
-					std::cout << "Message sended" << std::endl;
-					break;
-				}
+			std::cin >> Client_message.data();
+			Client_message.insert(Client_message.begin(), '4');
+			send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+
+			recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+			if (Server_message[0] == 'r') {
+				std::cout << "There is no such user" << std::endl;
+				break;
+			}
+			if (Server_message[0] == 'k') {
+				std::cout << "Write yout message" << std::endl;
+				std::cin >> Client_message.data();
+				send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+
+				recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+				std::cout << "Message sended" << std::endl;
+				break;
+			}
+			else {
+				std::cout << "Error" << std::endl;
+				break;
 			}
 			break;
 		case('3'):

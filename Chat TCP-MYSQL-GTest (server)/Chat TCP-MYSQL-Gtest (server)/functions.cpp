@@ -1,6 +1,7 @@
 #include "header.h"
 
 std::vector <char> Client_message(BUFF_SIZE), Server_message(BUFF_SIZE);
+std::vector <std::string> Messages;
 
 void Server_functions::message_distributor(SOCKET ClientConn) {
 	while (true) {
@@ -18,6 +19,15 @@ void Server_functions::message_distributor(SOCKET ClientConn) {
 		}
 		if (Client_message[0] == '2') {
 			login(ClientConn);
+		}
+		if (Client_message[0] == '3') {
+			message_all(ClientConn);
+		}
+		if (Client_message[0] == '4') {
+			message_private(ClientConn);
+		}
+		if (Client_message[0] == '5') {
+			logout(ClientConn);
 		}
 	}
 }
@@ -87,6 +97,57 @@ void Server_functions::login(SOCKET ClientConn) {
 		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
 		return;
 	}
+}
+
+void Server_functions::message_all(SOCKET ClientConn) {
+	Client_message.erase(Client_message.begin());
+	send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+	return;
+}
+
+void Server_functions::message_private(SOCKET ClientConn) {
+	Client_message.erase(Client_message.begin());
+	std::string mes, mes1;
+	for (int i = 0; i < Client_message.size(); i++) {
+		if (Client_message[i] == ' ') break;
+		mes += Client_message[i];
+	}
+	try {
+		res = stmt->executeQuery("SELECT username FROM user WHERE username = '" + mes + "'");
+		while (res->next()) {
+			std::string x = res->getString("username");
+			if (Client_message.data() == x) {
+				for (int i = 0; i < Client_message.size(); i++) {
+					if (Client_message[i] == ' ') break;
+					mes1 += Client_message[i];
+				}
+				mes1 += " -> ";
+
+				Server_message[0] = 'k';
+				send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+
+				recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+				for (int i = 0; i < Client_message.size(); i++) {
+					if (Client_message[i] == ' ') break;
+					mes1 += Client_message[i];
+				}
+				Messages.push_back(mes1);
+				send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+				return;
+			}
+		}
+	}
+	catch (sql::SQLException e) {
+		std::cout << e.what() << std::endl;
+		Server_message[0] = 'r';
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		return;
+	}
+}
+
+void Server_functions::logout(SOCKET ClientConn) {
+	Client_message.erase(Client_message.begin());
+
 }
 
 TEST(GTest, test1) {

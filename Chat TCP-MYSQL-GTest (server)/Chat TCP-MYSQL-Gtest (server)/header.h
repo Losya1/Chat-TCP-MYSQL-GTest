@@ -33,4 +33,7 @@ public:
 	void message_distributor(SOCKET ClientConn);
 	void registration(SOCKET ClientConn);
 	void login(SOCKET ClientConn);
+	void message_all(SOCKET ClientConn);
+	void message_private(SOCKET ClientConn);
+	void logout(SOCKET ClientConn);
 };
