@@ -35,5 +35,7 @@ public:
 	void login(SOCKET ClientConn);
 	void message_all(SOCKET ClientConn);
 	void message_private(SOCKET ClientConn);
+	void show_messages(SOCKET ClientConn);
 	void logout(SOCKET ClientConn);
+	void quit(SOCKET ClientConn);
 };

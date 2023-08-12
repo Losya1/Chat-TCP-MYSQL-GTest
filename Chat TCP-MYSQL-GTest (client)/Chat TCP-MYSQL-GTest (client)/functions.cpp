@@ -95,51 +95,55 @@ void User::authorized_user(const std::string name, SOCKET ClientSock) {
 			while (1) {
 				std::cout << "Write message" << std::endl;
 				std::cin >> Client_message.data();
-				Client_message.insert(Client_message.begin(), '3');
 
-				send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+				Username.insert(Username.begin(), '3');
+				send(ClientSock, Username.data(), BUFF_SIZE, 0);
+				recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);\
 
-				recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-
-				std::cout << name << ": " << Server_message.data() << std::endl;
+				if (Server_message[0] == 'k') {
+					send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+					recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+					std::cout << name << ": " << Server_message.data() << std::endl;
+					break;
+				}
+				else {
+					std::cout << "Error" << std::endl;
+					break;
+				}
 				break;
 		case('2'):
-			std::cout << "Write the name of the person to send the message to." << std::endl;
+			std::cout << "Write the name of the person to send the message to" << std::endl;
 			std::cin >> Client_message.data();
+
 			Client_message.insert(Client_message.begin(), '4');
 			send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
-
 			recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-			if (Server_message[0] == 'r') {
-				std::cout << "There is no such user" << std::endl;
-				break;
-			}
-			if (Server_message[0] == 'k') {
-				std::cout << "Write yout message" << std::endl;
-				std::cin >> Client_message.data();
-				send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
 
-				recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
-				std::cout << "Message sended" << std::endl;
-				break;
-			}
-			else {
+			send(ClientSock, Username.data(), BUFF_SIZE, 0);
+			recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+
+			std::cout << "Write message" << std::endl;
+			std::cin >> Client_message.data();
+
+			send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+			recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+
+			if (Server_message[0] == 'r') {
 				std::cout << "Error" << std::endl;
 				break;
 			}
+			std::cout << "Message sended" << std::endl;
 			break;
 		case('3'):
-			for (auto& p : user_arr) {
-				if (name == p.first) {
-					for (int i = 0; i < mes_arr.size(); i++) {
-						std::cout << mes_arr[i] << std::endl;
-						break;
-					}
-				}
-			}
+			send(ClientSock, Username.data(), BUFF_SIZE, 0);
+			recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+			std::cout << Server_message.data() << std::endl;
 			break;
 		case('4'):
-			std::cout << "logout" << std::endl;
+			Client_message.insert(Client_message.begin(), '6');
+			send(ClientSock, Client_message.data(), BUFF_SIZE, 0);
+			recv(ClientSock, Server_message.data(), BUFF_SIZE, 0);
+			std::cout << "Logout" << std::endl;
 			b = false;
 			break;
 		default:

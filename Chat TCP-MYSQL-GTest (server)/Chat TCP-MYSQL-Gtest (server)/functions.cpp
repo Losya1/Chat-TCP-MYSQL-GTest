@@ -1,7 +1,6 @@
 #include "header.h"
 
 std::vector <char> Client_message(BUFF_SIZE), Server_message(BUFF_SIZE);
-std::vector <std::string> Messages;
 
 void Server_functions::message_distributor(SOCKET ClientConn) {
 	while (true) {
@@ -11,8 +10,6 @@ void Server_functions::message_distributor(SOCKET ClientConn) {
 		if (Client_message[0] == 'r') {
 			Client_message.erase(Client_message.begin());
 		}
-
-		std::cout << Client_message.data() << std::endl;
 
 		if (Client_message[0] == '1') {
 			registration(ClientConn);
@@ -27,7 +24,14 @@ void Server_functions::message_distributor(SOCKET ClientConn) {
 			message_private(ClientConn);
 		}
 		if (Client_message[0] == '5') {
+			show_messages(ClientConn);
+		}
+		if (Client_message[0] == '6') {
 			logout(ClientConn);
+		}
+		if (Client_message[0] == '7') {
+			quit(ClientConn);
+			return;
 		}
 	}
 }
@@ -42,6 +46,9 @@ void Server_functions::registration(SOCKET ClientConn) {
 			return;
 		}
 	}
+
+	pstmt = con->prepareStatement("INSERT INTO user(username, password) VALUES(?,?)");
+
 	Server_message[0] = 'k'; //k - ok
 	pstmt->setString(1, Client_message.data());
 
@@ -100,54 +107,142 @@ void Server_functions::login(SOCKET ClientConn) {
 }
 
 void Server_functions::message_all(SOCKET ClientConn) {
-	Client_message.erase(Client_message.begin());
-	send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
-	return;
-}
+	std::string sender_name, sender_id, mes;
 
-void Server_functions::message_private(SOCKET ClientConn) {
 	Client_message.erase(Client_message.begin());
-	std::string mes, mes1;
 	for (int i = 0; i < Client_message.size(); i++) {
 		if (Client_message[i] == ' ') break;
-		mes += Client_message[i];
+		sender_name += Client_message[i];
 	}
 	try {
-		res = stmt->executeQuery("SELECT username FROM user WHERE username = '" + mes + "'");
+		res = stmt->executeQuery("SELECT id FROM user WHERE username = '" + sender_name + "'");
 		while (res->next()) {
-			std::string x = res->getString("username");
-			if (Client_message.data() == x) {
-				for (int i = 0; i < Client_message.size(); i++) {
-					if (Client_message[i] == ' ') break;
-					mes1 += Client_message[i];
-				}
-				mes1 += " -> ";
-
-				Server_message[0] = 'k';
-				send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
-
-				recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
-				for (int i = 0; i < Client_message.size(); i++) {
-					if (Client_message[i] == ' ') break;
-					mes1 += Client_message[i];
-				}
-				Messages.push_back(mes1);
-				send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
-				return;
-			}
+			sender_id = res->getString("id");
 		}
+		Server_message[0] = 'k';
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+
+		mes = sender_name + ": " + Client_message.data();
+		std::cout << mes << std::endl;
+
+		pstmt = con->prepareStatement("INSERT INTO messages(content, sender_id) VALUES(?,?)");
+		pstmt->setString(1, mes);
+		pstmt->setString(2, sender_id);
+		pstmt->execute();
 	}
+
 	catch (sql::SQLException e) {
 		std::cout << e.what() << std::endl;
 		Server_message[0] = 'r';
 		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
 		return;
 	}
+
+	send(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+	return;
+}
+
+void Server_functions::message_private(SOCKET ClientConn) {
+	std::string recipient_name, sender_name, recipient_id, sender_id, mes;
+
+	Client_message.erase(Client_message.begin());
+
+	for (int i = 0; i < Client_message.size(); i++) {
+		if (Client_message[i] == ' ') break;
+		recipient_name += Client_message[i];
+	}
+	res = stmt->executeQuery("SELECT id FROM user WHERE username = '" + recipient_name + "'");
+	while (res->next()) {
+		recipient_id = res->getString("id");
+	}
+
+	Server_message[0] = 'k';
+	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+	recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+
+	for (int i = 0; i < Client_message.size(); i++) {
+		if (Client_message[i] == ' ') break;
+		sender_name += Client_message[i];
+	}
+
+	try {
+		res = stmt->executeQuery("SELECT id FROM user WHERE username = '" + sender_name + "'");
+		while (res->next()) {
+			sender_id = res->getString("id");
+		}
+
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		recv(ClientConn, Client_message.data(), BUFF_SIZE, 0);
+
+		mes = sender_name + " -> " + recipient_name + ": " + Client_message.data();
+		std::cout << mes << std::endl;
+
+		pstmt = con->prepareStatement("INSERT INTO messages(content, sender_id, recipient_id) VALUES(?,?,?)");
+		pstmt->setString(1, mes);
+		pstmt->setString(2, sender_id);
+		pstmt->setString(3, recipient_id);
+		pstmt->execute();
+	}
+
+	catch (sql::SQLException e) {
+		std::cout << e.what() << std::endl;
+		Server_message[0] = 'r';
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		return;
+	}
+
+	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+	return;
+}
+
+void Server_functions::show_messages(SOCKET ClientConn) {
+	std::string recipient_name, recipient_id, mes;
+
+	Client_message.erase(Client_message.begin());
+
+	for (int i = 0; i < Client_message.size(); i++) {
+		if (Client_message[i] == ' ') break;
+		recipient_name += Client_message[i];
+	}
+	res = stmt->executeQuery("SELECT id FROM user WHERE username = '" + recipient_name + "'");
+	while (res->next()) {
+		recipient_id = res->getString("id");
+	}
+
+	try {
+		res = stmt->executeQuery("SELECT content FROM messages WHERE recipient_id = '" + recipient_id + "'");
+		while (res->next()) {
+			mes += res->getString("content") + ", ";
+		}
+		for (int i = 0; i < mes.size(); i++) {
+			Server_message[i] = mes[i];
+		}
+
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+	}
+
+	catch (sql::SQLException e) {
+		std::cout << e.what() << std::endl;
+		Server_message[0] = 'r';
+		send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+		return;
+	}
+	return;
 }
 
 void Server_functions::logout(SOCKET ClientConn) {
 	Client_message.erase(Client_message.begin());
+	Server_message[0] = 'k';
+	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+	return;
+}
 
+void Server_functions::quit(SOCKET ClientConn) {
+	Client_message.erase(Client_message.begin());
+	Server_message[0] = 'k';
+	send(ClientConn, Server_message.data(), BUFF_SIZE, 0);
+	return;
 }
 
 TEST(GTest, test1) {

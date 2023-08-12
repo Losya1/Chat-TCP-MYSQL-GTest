@@ -110,13 +110,13 @@ int main(int argc, char* argv[]) {
 
 	stmt = con->createStatement();
 
-	pstmt = con->prepareStatement("INSERT INTO user(username, password) VALUES(?,?)");
-
 	//MAIN
 
 	Server_functions sf;
 
 	sf.message_distributor(ClientConn);
+
+	std::cout << "Server shutting down" << std::endl;
 
 	delete stmt;
 	delete pstmt;

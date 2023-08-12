@@ -53,6 +53,8 @@ int main() {
 		std::cout << "Connection established SUCCESSFULLY. Ready to send a message to Server" << std::endl;
 	}
 
+	std::vector <char> Arr(BUFF_SIZE);
+
 	User chat;
 	bool b = true;
 	char x;
@@ -68,6 +70,9 @@ int main() {
 			chat.authorized_user(chat.login(ClientSock), ClientSock);
 			break;
 		case('3'):
+			Arr.insert(Arr.begin(), '7');
+			send(ClientSock, Arr.data(), BUFF_SIZE, 0);
+			recv(ClientSock, Arr.data(), BUFF_SIZE, 0);
 			b = false;
 			break;
 		default:
